@@ -1,0 +1,73 @@
+<div class="header-banner">
+  <button class="menu-btn" (click)="toggleMenu()">☰</button>
+
+  <div class="logo-container">
+    <img src="/public/logo-universidad-tecnica-de-machala.webp" alt="Logo UTMACH" />
+  </div>
+  <div class="text-container">
+    <h1>CHAT-AI DE ORIENTACIÓN VOCACIONAL</h1>
+    <p>Universidad Técnica de Machala - UTMACH</p>
+  </div>
+</div>
+
+<div class="chat-container">
+  <!-- Menú lateral -->
+  <div class="chat-sidebar" [ngClass]="{'show': showMenu}">
+    <h3 class="sidebar-title">Historial de Conversaciones</h3>
+    <ul class="conversation-list">
+      <li *ngFor="let conversation of conversations" class="conversation-item">
+        <div class="conversation-content">
+          <button class="load-btn" (click)="loadConversation(conversation.userName)">
+            {{ conversation.userName }}
+          </button>
+          <button class="delete-btn" (click)="deleteConversation(conversation.userName)">✖</button>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Área de chat -->
+  <div class="chat-box" [ngClass]="{'with-menu': showMenu}">
+    <!-- Indicador de progreso -->
+    <div class="progress-indicator" *ngIf="hasName && !chatTerminado && questions.length > 0">
+      Pregunta {{ questionIndex + 1 }} de {{ questions.length }}
+    </div>
+
+
+    <!-- Mensaje para respuesta inválida (controlado desde TS) -->
+    <div class="invalid-answer-message" *ngIf="showInvalidAnswerMsg">
+      Por favor, intenta responder nuevamente con más claridad o detalle.
+    </div>
+
+    <div id="chatTranscript" class="messages" #chatContainer>
+      <div *ngFor="let message of messages" [ngClass]="message.sender">
+        <!-- Mensaje del usuario -->
+        <p *ngIf="message.sender === 'user'">{{ message.text }}</p>
+
+        <!-- Mensaje del bot procesado -->
+        <div *ngIf="message.sender === 'bot'" [innerHTML]="message.html ? message.html : message.text"></div>
+      </div>
+    </div>
+
+    <div class="chat-actions" *ngIf="chatTerminado">
+      <p class="final-msg">🎓 ¡Tu orientación está lista! Puedes copiarla o descargarla en PDF.</p>
+      <button (click)="copiarConversacion()">📋 Copiar texto</button>
+      <button (click)="generarPDF()">📄 Generar PDF</button>
+    </div>
+
+
+    <!-- Indicador de carga -->
+    <div class="loading-indicator" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <span>Procesando información...</span>
+    </div>
+
+    <div class="input-container">
+      <input type="text" [(ngModel)]="userMessage" (keydown.enter)="sendMessage()" placeholder="Escribe tu mensaje..."
+        class="message-input" [disabled]="chatTerminado || isLoading" />
+      <button class="send-btn" (click)="sendMessage()" aria-label="Enviar mensaje"
+        [disabled]="chatTerminado || isLoading || !userMessage.trim()">➤</button>
+      <button class="clear-btn" (click)="confirmarResetChat()">Nueva conversación</button>
+    </div>
+  </div>
+</div>
