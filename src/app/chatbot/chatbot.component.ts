@@ -100,7 +100,7 @@ Responde SOLO con un número (1 a 5).
 
     try {
       const res = await this.http.post<{ response: string }>(
-        'https://chatbot-orientacion.onrender.com/api/chat',
+        'https://chatbot-deepseek-qv09.onrender.com/api/chat',
         { message: prompt }
       ).toPromise();
 
@@ -164,7 +164,7 @@ Responde SOLO con un número (1 a 5).
           const prompt = `Eres un orientador vocacional empático de la Universidad Técnica de Machala (UTMACH). Has hecho esta pregunta: "${currentQuestion.text}". El estudiante respondió de forma confusa: "${userText}". Reformula la pregunta de forma más clara, con un ejemplo breve (máximo 15 palabras). Usa un tono amable y directo. Solo entrega la reformulación, no expliques ni incluyas notas.`;
           try {
             const res = await this.http.post<{ response: string }>(
-              'https://chatbot-orientacion.onrender.com/api/chat',
+              'https://chatbot-deepseek-qv09.onrender.com/api/chat',
               { message: prompt }
             ).toPromise();
             const html = await this.parseMarkdown(res?.response || currentQuestion.text);
@@ -202,7 +202,7 @@ Responde SOLO con un número (1 a 5).
     } else if (this.awaitingFollowUp) {
       const prompt = `El estudiante respondió: "${userText}" luego de su recomendación vocacional. Responde de manera cálida y útil.`;
       try {
-        const res = await this.http.post<{ response: string }>('https://chatbot-orientacion.onrender.com/api/chat', { message: prompt }).toPromise();
+        const res = await this.http.post<{ response: string }>('https://chatbot-deepseek-qv09.onrender.com/api/chat', { message: prompt }).toPromise();
         await this.typeBotMessage(res?.response || 'Gracias por tu mensaje.');
       } catch {
         await this.typeBotMessage('Gracias por tu mensaje.');
@@ -213,7 +213,7 @@ Responde SOLO con un número (1 a 5).
   async generateQuestionsFromInterests(interests: string): Promise<void> {
     const prompt = `Eres un orientador vocacional de UTMACH. A partir de esta descripción: "${interests}", genera 16 preguntas vocacionales variadas. Reformula cada una para que sea clara y tenga ejemplos entre paréntesis. Ejemplo: "¿Qué te gusta más al programar? (crear apps, resolver problemas, automatizar cosas)". Devuelve en formato JSON: [{"key": "pregunta1", "text": "¿...?"}, ...]`;
     try {
-      const res = await this.http.post<{ response: string }>('https://chatbot-orientacion.onrender.com/api/chat', { message: prompt }).toPromise();
+      const res = await this.http.post<{ response: string }>('https://chatbot-deepseek-qv09.onrender.com/api/chat', { message: prompt }).toPromise();
       const raw = (res?.response || '').replace(/```json/g, '').replace(/```/g, '').trim();
       const jsonPart = raw.split('\n').filter(line => !line.trim().startsWith('**Nota')).join('\n').trim();
 
@@ -232,7 +232,7 @@ Responde SOLO con un número (1 a 5).
   async generateNaturalResponse(pregunta: string, respuesta: string, siguiente: string): Promise<string> {
     const prompt = `Eres un orientador cálido y directo de la UTMACH. Responde con una reacción corta a lo que el estudiante dijo: "${respuesta}" a la pregunta: "${pregunta}". Luego enlaza de forma natural con esta nueva pregunta: "${siguiente}". Usa una sola oración para reaccionar (ej: “¡Qué interesante!”) y otra para introducir la siguiente. No te extiendas ni incluyas explicaciones técnicas.`;
     try {
-      const res = await this.http.post<{ response: string }>('https://chatbot-orientacion.onrender.com/api/chat', { message: prompt }).toPromise();
+      const res = await this.http.post<{ response: string }>('https://chatbot-deepseek-qv09.onrender.com/api/chat', { message: prompt }).toPromise();
       return res?.response || 'Gracias por tu respuesta. Vamos con otra pregunta.';
     } catch {
       return 'Gracias por tu respuesta. Vamos con otra pregunta.';
@@ -246,12 +246,12 @@ Responde SOLO con un número (1 a 5).
     this.isLoading = true; // 👈 Activa el spinner
 
     try {
-      const res = await this.http.post<{ response: string }>('https://chatbot-orientacion.onrender.com/api/chat', { message: prompt }).toPromise();
+      const res = await this.http.post<{ response: string }>('https://chatbot-deepseek-qv09.onrender.com/api/chat', { message: prompt }).toPromise();
       const html = await this.parseMarkdown(res?.response || 'No se pudo generar una recomendación.');
       this.messages.push({ sender: 'bot', text: res?.response || '', html });
       this.processCompleted = true;
       this.chatStorage.saveConversation(this.userName, this.messages);
-      await this.http.post('https://chatbot-orientacion.onrender.com/api/guardar-resultado', {
+      await this.http.post('https://chatbot-deepseek-qv09.onrender.com/api/guardar-resultado', {
         nombre: this.userName,
         resultado: res?.response || ''
       }).toPromise();
